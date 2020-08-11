@@ -1,24 +1,25 @@
-import { Args, Resolver, Mutation } from '@nestjs/graphql';
-
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../shared/dto/create-user.dto';
+import { LoggedUser } from '../graphql';
 
 @Resolver('Auth')
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
-
-  @Mutation('registration')
-  async registration(
-    @Args('createUserInput') data: CreateUserDto,
-  ): Promise<any> {
-    // console.log('from resolve', data );
-    return await this.authService.registration(data);
+  constructor(private authService: AuthService) {
   }
 
-  @Mutation('updateUserAvatar')
-  async updateUserAvatar(
-    @Args('updateUserAvatarInput') data: { id: string; url: string },
-  ): Promise<any> {
-    return await this.authService.update(data);
+  @Query()
+  async login(@Args('username') username: string, @Args('password') pass: string): Promise<LoggedUser> {
+    try {
+      const user = await this.authService.validateUser(username, pass);
+
+      const token = await this.authService.login(user);
+
+      return {
+        user,
+        ...token,
+      };
+    } catch (e) {
+      return e;
+    }
   }
 }

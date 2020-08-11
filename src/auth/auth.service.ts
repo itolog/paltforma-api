@@ -1,52 +1,39 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../graphql';
 import * as bcrypt from 'bcrypt';
-
-import { User } from '../shared/schemas/user.schema';
-import { CreateUserDto } from '../shared/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(private usersService: UsersService, private jwtService: JwtService) {
+  }
 
-  // async validateUser(username: string, pass: string): Promise<any> {
-  //   const user = await this.userModel.findOne({name: username});
-  //   if (user && user.password === pass) {
-  //     const { password, ...result } = user;
-  //     return result;
-  //   }
-  //   return null;
-  // }
+  async validateUser(username: string, password: string): Promise<User> {
+    const user = await this.usersService.findUser(username);
 
-  async registration(data: CreateUserDto): Promise<any> {
-    data.password = await bcrypt.hash(data.password, 10);
+    const isPasswordValid: boolean = await bcrypt.compare(password, user.password);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+    }
+
+    if (!isPasswordValid) {
+      throw new HttpException('Wrong password', HttpStatus.UNAUTHORIZED);
+    }
+    delete user.password;
+
+    return user;
+  }
+
+  async login(user: User): Promise<any> {
     try {
-      const createdUser = new this.userModel(data);
-      return await createdUser.save();
+      const payload = { username: user.name, sub: user.id };
+      return {
+        token: this.jwtService.sign(payload),
+      };
     } catch (e) {
       throw new Error(e);
     }
   }
-
-  async update(data: { id: string; url: string }): Promise<any> {
-    try {
-        await this.userModel
-        .updateOne({ _id: data.id }, { avatar: data.url })
-        .exec();
-
-      return 'User Avatar success updated';
-    } catch (e) {
-      throw new Error(e);
-    }
-  }
-
-  // async login(): Promise<any> {
-  //   try {
-  //     const users = this.userModel.find().exec();
-  //     return users;
-  //   } catch (e) {
-  //     throw new Error(e);
-  //   }
-  // }
 }

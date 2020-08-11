@@ -18,9 +18,10 @@ import { join } from 'path';
       isGlobal: true,
     }),
     GraphQLModule.forRoot({
+      context: ({ req }) => ({ req }),
       typePaths: ['./**/*.graphql'],
       definitions: {
-        path: join(process.cwd(), 'graphql.ts'),
+        path: join(process.cwd(), 'src/graphql.ts'),
       },
       introspection: true,
       playground: true,
@@ -39,5 +40,4 @@ import { join } from 'path';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

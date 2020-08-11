@@ -1,32 +1,8 @@
-type Query {
-  user(id: ID!): User!
-  users: [User!]
+type Query{
+    login(username: String!, password: String!): LoggedUser!
 }
 
-type Mutation {
-  registration(createUserInput: CreateUserInput): User
-  updateUserAvatar(updateUserAvatarInput: UpdateUserAvatarInput): String
-}
-
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  token: String!
-  avatar: String
-  isAdmin: Boolean
-}
-
-input CreateUserInput {
-  name: String!
-  email: String!
-  password: String!
-  token: String!
-  avatar: String
-  isAdmin: Boolean
-}
-
-input UpdateUserAvatarInput {
-  id: ID!
-  url: String!
+type LoggedUser {
+    user: User!
+    token: String!
 }

@@ -10,7 +10,6 @@ export interface CreateUserInput {
     name: string;
     email: string;
     password: string;
-    token: string;
     avatar?: string;
     isAdmin?: boolean;
 }
@@ -21,20 +20,25 @@ export interface UpdateUserAvatarInput {
 }
 
 export interface IQuery {
-    user(id: string): User | Promise<User>;
+    login(username: string, password: string): LoggedUser | Promise<LoggedUser>;
+    user(name: string): User | Promise<User>;
     users(): User[] | Promise<User[]>;
 }
 
+export interface LoggedUser {
+    user: User;
+    token: string;
+}
+
 export interface IMutation {
-    registration(createUserInput?: CreateUserInput): User | Promise<User>;
-    updateUserAvatar(updateUserAvatarInput?: UpdateUserAvatarInput): User | Promise<User>;
+    createUser(createUserInput?: CreateUserInput): User | Promise<User>;
+    updateUserAvatar(updateUserAvatarInput?: UpdateUserAvatarInput): string | Promise<string>;
 }
 
 export interface User {
-    id: string;
+    id?: string;
     name: string;
     email: string;
-    token: string;
     avatar?: string;
     isAdmin?: boolean;
 }
