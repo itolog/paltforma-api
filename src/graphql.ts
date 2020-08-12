@@ -6,17 +6,19 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export interface UserInput {
+    name?: string;
+    email?: string;
+    avatar?: string;
+    isAdmin?: boolean;
+}
+
 export interface CreateUserInput {
     name: string;
     email: string;
     password: string;
     avatar?: string;
     isAdmin?: boolean;
-}
-
-export interface UpdateUserAvatarInput {
-    id: string;
-    url: string;
 }
 
 export interface IQuery {
@@ -32,7 +34,8 @@ export interface LoggedUser {
 
 export interface IMutation {
     createUser(createUserInput?: CreateUserInput): User | Promise<User>;
-    updateUserAvatar(updateUserAvatarInput?: UpdateUserAvatarInput): string | Promise<string>;
+    updateUser(id: string, user?: UserInput): string | Promise<string>;
+    deleteUser(id: string): string | Promise<string>;
 }
 
 export interface User {

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class User extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({  required: true, unique: true })
   name: string;
 
   @Prop({ required: true, unique: true })
@@ -13,10 +13,10 @@ export class User extends Document {
   password: string;
 
 
-  @Prop({ required: true, default: 'https://www.meme-arsenal.com/memes/0b37d82bcfd11cb3196fa5329f3bff0f.jpg' })
+  @Prop({ default: 'https://www.meme-arsenal.com/memes/0b37d82bcfd11cb3196fa5329f3bff0f.jpg' })
   avatar: string;
 
-  @Prop({ required: true, default: false })
+  @Prop({ default: false })
   isAdmin: boolean;
 }
 

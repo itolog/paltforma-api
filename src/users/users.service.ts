@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
-import { User } from '../shared/schemas/user.schema';
+import { User } from './schemas/user.schema';
 
-import { CreateUserInput } from '../graphql';
+import { CreateUserInput, UserInput } from '../graphql';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +22,24 @@ export class UsersService {
     }
   }
 
+  async deleteUser(id: string): Promise<string> {
+    try {
+      await this.userModel.deleteOne({ _id: id });
+      return `пользователь с id['${id}'] успешно удалён`;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  async updateUser(id: string, user: UserInput): Promise<string> {
+    try {
+      await this.userModel.updateOne({ _id: id }, user);
+      return `пользователь с id['${id}'] успешно обновлён`;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
   async findUser(name: string): Promise<User> {
     const user = await this.userModel.findOne({ name });
     if (!user) {
@@ -29,7 +47,6 @@ export class UsersService {
     }
     return user;
   }
-
 
   async findAllUsers(): Promise<User[]> {
     try {
